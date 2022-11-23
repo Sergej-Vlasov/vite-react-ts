@@ -7,7 +7,7 @@ function App() {
   });
 
   if (error) {
-    return <div>{JSON.stringify(error)}</div>;
+    return <div>{JSON.stringify(error, undefined, 2)}</div>;
   }
 
   if (loading) {

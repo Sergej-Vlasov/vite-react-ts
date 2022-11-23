@@ -2,8 +2,8 @@
 
 This project is set up with [Vite](https://vitejs.dev/)
 
-Framework - React with TypeScript
-Linting - eslint with Airbnb React + Typescript preset
+Framework - React with TypeScript  
+Linting - eslint with Airbnb React + Typescript preset  
 Testing - Vitest runner with React Testing Library that utilises jsdom
 
 ## Useful Resources

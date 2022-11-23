@@ -13,7 +13,7 @@ export const getRepositories = gql`
         __typename
         ... on Repository {
           id
-          name
+          nameWithOwner
           url
           stargazerCount
           forkCount

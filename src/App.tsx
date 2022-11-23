@@ -14,8 +14,6 @@ function App() {
     return <h1>Loading...</h1>;
   }
 
-  console.log(data);
-
   return <h1>Hello World</h1>;
 }
 

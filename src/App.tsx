@@ -1,6 +1,21 @@
-import { useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { getRepositories } from './graphql';
 
 function App() {
+  const { data, error, loading } = useQuery(getRepositories, {
+    variables: { query: 'react' },
+  });
+
+  if (error) {
+    return <div>{JSON.stringify(error)}</div>;
+  }
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  console.log(data);
+
   return <h1>Hello World</h1>;
 }
 

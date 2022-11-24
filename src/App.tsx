@@ -50,6 +50,7 @@ function App() {
       setSearchQuery(e.target.value);
       if (e.target.value.length < 3) {
         setInputError(true);
+        debouncedFetch.cancel();
         return;
       }
 
@@ -150,7 +151,7 @@ function App() {
                           </Typography>
                         </TableCell>
                         <TableCell align="right">
-                          <CodeForkSvg />
+                          <CodeForkSvg />{' '}
                           <Typography sx={{ display: 'inline' }}>{forkCount}</Typography>
                         </TableCell>
                       </TableRow>

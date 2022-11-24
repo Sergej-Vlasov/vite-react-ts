@@ -1,6 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import {
   Box,
+  CircularProgress,
   Container,
   Paper,
   Table,
@@ -31,6 +32,7 @@ function App() {
   const [fetchRepos, { data, error, loading }] =
     useLazyQuery<IGetRepositoriesQuery>(getRepositories);
 
+  // put debounce function into ref to perform clean up afterwards
   const debouncedFetch = useRef(
     debounce(
       (query) =>
@@ -67,56 +69,75 @@ function App() {
 
   useEffect(() => {
     return () => {
+      // clean up debounce if component unmounts before it finishes
       debouncedFetch.cancel();
     };
   }, [debouncedFetch]);
 
-  let htmlToRender = <div>Hello World</div>;
-
-  if (loading) {
-    htmlToRender = <div>Loading...</div>;
-  }
+  let htmlToRender = (
+    <TableContainer component={Paper}>
+      <Table aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Repository Name</TableCell>
+            <TableCell align="right">Stars</TableCell>
+            <TableCell align="right">Forks</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data?.search.nodes.length
+            ? data.search.nodes.map(
+                ({ id, nameWithOwner, url, stargazerCount, forkCount }) => (
+                  <TableRow
+                    key={id}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <Typography
+                        component="a"
+                        href={url}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {nameWithOwner}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">{stargazerCount}</TableCell>
+                    <TableCell align="right">{forkCount}</TableCell>
+                  </TableRow>
+                )
+              )
+            : null}
+        </TableBody>
+      </Table>
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{ marginRight: '0.5rem' }}
+          >
+            Fetching data...
+          </Typography>
+          <CircularProgress size="1.5rem" />
+        </Box>
+      ) : null}
+      {!loading && !data?.search.nodes.length ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{ marginRight: '0.5rem' }}
+          >
+            Table is empty
+          </Typography>
+        </Box>
+      ) : null}
+    </TableContainer>
+  );
 
   if (error) {
     htmlToRender = <div>{JSON.stringify(error, undefined, 2)}</div>;
-  }
-  if (data) {
-    htmlToRender = (
-      <TableContainer component={Paper}>
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Repository Name</TableCell>
-              <TableCell align="right">Stars</TableCell>
-              <TableCell align="right">Forks</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.search.nodes.map(
-              ({ id, nameWithOwner, url, stargazerCount, forkCount }) => (
-                <TableRow
-                  key={id}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    <Typography
-                      component="a"
-                      href={url}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      {nameWithOwner}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">{stargazerCount}</TableCell>
-                  <TableCell align="right">{forkCount}</TableCell>
-                </TableRow>
-              )
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
   }
 
   return (

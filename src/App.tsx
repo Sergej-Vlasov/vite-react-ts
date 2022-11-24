@@ -1,5 +1,6 @@
 import { useLazyQuery } from '@apollo/client';
 import {
+  Alert,
   Box,
   CircularProgress,
   Container,
@@ -75,87 +76,6 @@ function App() {
     };
   }, [debouncedFetch]);
 
-  let htmlToRender = (
-    <TableContainer component={Paper}>
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Repository Name</TableCell>
-            <TableCell align="right">
-              <StargazerSvg /> <Typography sx={{ display: 'inline' }}>Stars</Typography>
-            </TableCell>
-            <TableCell align="right">
-              <CodeForkSvg /> <Typography sx={{ display: 'inline' }}>Forks</Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data?.search.nodes.length
-            ? data.search.nodes.map(
-                ({ id, nameWithOwner, url, stargazerCount, forkCount }) => (
-                  <TableRow
-                    key={id}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Typography
-                        component="a"
-                        href={url}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                        sx={{
-                          textDecoration: 'none',
-                          color: 'text.primary',
-                          '&:hover': { textDecoration: 'underline' },
-                        }}
-                      >
-                        {nameWithOwner}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <StargazerSvg />{' '}
-                      <Typography sx={{ display: 'inline' }}>{stargazerCount}</Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <CodeForkSvg />
-                      <Typography sx={{ display: 'inline' }}>{forkCount}</Typography>
-                    </TableCell>
-                  </TableRow>
-                )
-              )
-            : null}
-        </TableBody>
-      </Table>
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{ marginRight: '0.5rem' }}
-          >
-            Fetching data...
-          </Typography>
-          <CircularProgress size="1.5rem" />
-        </Box>
-      ) : null}
-      {!loading && !data?.search.nodes.length ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{ marginRight: '0.5rem' }}
-          >
-            Table is empty
-          </Typography>
-        </Box>
-      ) : null}
-    </TableContainer>
-  );
-
-  if (error) {
-    htmlToRender = <div>{JSON.stringify(error, undefined, 2)}</div>;
-  }
-
   return (
     <Container fixed sx={{ marginInline: 'auto' }}>
       <Typography sx={{ marginBottom: '1rem' }} component="h1" variant="h4">
@@ -180,8 +100,94 @@ function App() {
           onChange={handleInputChange}
         />
       </Box>
-
-      {htmlToRender}
+      {error ? (
+        <Alert sx={{ maxWidth: '30rem', marginInline: 'auto' }} severity="error">
+          Something went wrong
+        </Alert>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Repository Name</TableCell>
+                <TableCell align="right">
+                  <StargazerSvg />{' '}
+                  <Typography sx={{ display: 'inline' }}>Stars</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <CodeForkSvg />{' '}
+                  <Typography sx={{ display: 'inline' }}>Forks</Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data?.search.nodes.length
+                ? data.search.nodes.map(
+                    ({ id, nameWithOwner, url, stargazerCount, forkCount }) => (
+                      <TableRow
+                        key={id}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      >
+                        <TableCell component="th" scope="row">
+                          <Typography
+                            component="a"
+                            href={url}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            sx={{
+                              textDecoration: 'none',
+                              color: 'text.primary',
+                              '&:hover': { textDecoration: 'underline' },
+                            }}
+                          >
+                            {nameWithOwner}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <StargazerSvg />{' '}
+                          <Typography sx={{ display: 'inline' }}>
+                            {stargazerCount}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <CodeForkSvg />
+                          <Typography sx={{ display: 'inline' }}>{forkCount}</Typography>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  )
+                : null}
+            </TableBody>
+          </Table>
+          {loading ? (
+            <Box
+              sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}
+            >
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ marginRight: '0.5rem' }}
+              >
+                Fetching data...
+              </Typography>
+              <CircularProgress size="1.5rem" />
+            </Box>
+          ) : null}
+          {!loading && !data?.search.nodes.length ? (
+            <Box
+              sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}
+            >
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ marginRight: '0.5rem' }}
+              >
+                Table is empty
+              </Typography>
+            </Box>
+          ) : null}
+        </TableContainer>
+      )}
     </Container>
   );
 }

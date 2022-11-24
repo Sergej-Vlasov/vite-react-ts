@@ -37,7 +37,7 @@ function App() {
   // put debounce function into ref to perform clean up afterwards
   const debouncedFetch = useRef(
     debounce(
-      (query) =>
+      (query: string) =>
         fetchRepos({
           variables: { query },
         }),

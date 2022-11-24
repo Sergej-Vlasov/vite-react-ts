@@ -98,6 +98,11 @@ function App() {
                         href={url}
                         rel="noopener noreferrer"
                         target="_blank"
+                        sx={{
+                          textDecoration: 'none',
+                          color: 'text.primary',
+                          '&:hover': { textDecoration: 'underline' },
+                        }}
                       >
                         {nameWithOwner}
                       </Typography>

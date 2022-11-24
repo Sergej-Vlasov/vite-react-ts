@@ -17,6 +17,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash-es';
 import { getRepositories } from './graphql';
 import { IPageInfo, IQueryNodes, IRepository } from './types';
+import { CodeForkSvg, StargazerSvg } from './assets';
 
 interface ISearchResult extends IQueryNodes<IRepository> {
   pageInfo: IPageInfo;
@@ -80,8 +81,12 @@ function App() {
         <TableHead>
           <TableRow>
             <TableCell>Repository Name</TableCell>
-            <TableCell align="right">Stars</TableCell>
-            <TableCell align="right">Forks</TableCell>
+            <TableCell align="right">
+              <StargazerSvg /> <Typography sx={{ display: 'inline' }}>Stars</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <CodeForkSvg /> <Typography sx={{ display: 'inline' }}>Forks</Typography>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -107,8 +112,14 @@ function App() {
                         {nameWithOwner}
                       </Typography>
                     </TableCell>
-                    <TableCell align="right">{stargazerCount}</TableCell>
-                    <TableCell align="right">{forkCount}</TableCell>
+                    <TableCell align="right">
+                      <StargazerSvg />{' '}
+                      <Typography sx={{ display: 'inline' }}>{stargazerCount}</Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <CodeForkSvg />
+                      <Typography sx={{ display: 'inline' }}>{forkCount}</Typography>
+                    </TableCell>
                   </TableRow>
                 )
               )
@@ -146,7 +157,7 @@ function App() {
   }
 
   return (
-    <Container sx={{ minWidth: '32rem', maxWidth: '50rem', marginInline: 'auto' }}>
+    <Container fixed sx={{ marginInline: 'auto' }}>
       <Typography sx={{ marginBottom: '1rem' }} component="h1" variant="h4">
         Search Github Repositories
       </Typography>

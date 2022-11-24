@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import {
   Box,
   Container,
@@ -12,7 +12,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { debounce } from 'lodash-es';
 import { getRepositories } from './graphql';
 import { IPageInfo, IQueryNodes, IRepository } from './types';
 
@@ -25,14 +26,55 @@ interface IGetRepositoriesQuery {
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('react');
-  const { data, error, loading } = useQuery<IGetRepositoriesQuery>(getRepositories, {
-    variables: { query: searchQuery },
-  });
+  const [inputError, setInputError] = useState(false);
 
-  let htmlToRender = <h1>Hello World</h1>;
+  const [fetchRepos, { data, error, loading }] =
+    useLazyQuery<IGetRepositoriesQuery>(getRepositories);
+
+  const debouncedFetch = useRef(
+    debounce(
+      (query) =>
+        fetchRepos({
+          variables: { query },
+        }),
+      300
+    )
+  ).current;
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setSearchQuery(e.target.value);
+      if (e.target.value.length < 3) {
+        setInputError(true);
+        return;
+      }
+
+      if (inputError) setInputError(false);
+
+      debouncedFetch(e.target.value);
+    },
+    [debouncedFetch, inputError]
+  );
+
+  useEffect(() => {
+    if (searchQuery.length >= 3) {
+      fetchRepos({
+        variables: { query: searchQuery },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedFetch.cancel();
+    };
+  }, [debouncedFetch]);
+
+  let htmlToRender = <div>Hello World</div>;
 
   if (loading) {
-    htmlToRender = <h1>Loading...</h1>;
+    htmlToRender = <div>Loading...</div>;
   }
 
   if (error) {
@@ -94,9 +136,11 @@ function App() {
             width: '100%',
           }}
           size="small"
-          label="Search repos"
+          label="Enter value to search"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          error={inputError}
+          helperText={inputError ? 'Enter at least 3 characters' : ''}
+          onChange={handleInputChange}
         />
       </Box>
 

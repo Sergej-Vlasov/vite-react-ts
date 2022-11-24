@@ -1,10 +1,12 @@
 import { createHttpLink, ApolloClient, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import fetch from 'cross-fetch';
 
 const { VITE_GRAPHQL_API_KEY } = import.meta.env;
 
 const httpLink = createHttpLink({
   uri: 'https://api.github.com/graphql',
+  fetch,
 });
 
 // using auth link to adjust context to include auth header

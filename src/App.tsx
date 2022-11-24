@@ -31,13 +31,14 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('react');
   const [inputError, setInputError] = useState(false);
 
+  // using lazy query to have a more fine grained control over when to fetch data
   const [fetchRepos, { data, error, loading }] =
     useLazyQuery<IGetRepositoriesQuery>(getRepositories);
 
   // put debounce function into ref to perform clean up afterwards
   const debouncedFetch = useRef(
     debounce(
-      (query) =>
+      (query: string) =>
         fetchRepos({
           variables: { query },
         }),
@@ -48,20 +49,30 @@ function App() {
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setSearchQuery(e.target.value);
+
+      // validation of value
       if (e.target.value.length < 3) {
         setInputError(true);
+        /* 
+        cancel debounce when validation no longer passes
+          useful when deleting with backspace to avoid sending 
+          request with the last valid value (e.g. "rea")
+        */
         debouncedFetch.cancel();
         return;
       }
 
+      // reset input error when validation passes
       if (inputError) setInputError(false);
 
+      // fetch the new data with debounce function
       debouncedFetch(e.target.value);
     },
     [debouncedFetch, inputError]
   );
 
   useEffect(() => {
+    // initial data fetch on component mount
     if (searchQuery.length >= 3) {
       fetchRepos({
         variables: { query: searchQuery },
@@ -98,6 +109,7 @@ function App() {
           value={searchQuery}
           error={inputError}
           helperText={inputError ? 'Enter at least 3 characters' : ''}
+          disabled={loading}
           onChange={handleInputChange}
         />
       </Box>
@@ -122,6 +134,7 @@ function App() {
               </TableRow>
             </TableHead>
             <TableBody>
+              {/* render data only when its not empty */}
               {data?.search.nodes.length
                 ? data.search.nodes.map(
                     ({ id, nameWithOwner, url, stargazerCount, forkCount }) => (
@@ -160,6 +173,7 @@ function App() {
                 : null}
             </TableBody>
           </Table>
+          {/* loading placeholder */}
           {loading ? (
             <Box
               sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}
@@ -174,6 +188,7 @@ function App() {
               <CircularProgress size="1.5rem" />
             </Box>
           ) : null}
+          {/* if search result is empty inform the user with a message */}
           {!loading && !data?.search.nodes.length ? (
             <Box
               sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}

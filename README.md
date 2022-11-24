@@ -35,6 +35,7 @@ open coverage/index.html
 ## Next steps and thoughts
 
 - compartmentalise parts of `App.tsx` in particular table, input, loading and error components
+- add pagination of query results with cursor
 - add polyfills from `core-js` for good measure
 - add CI/CD for automated deployment and testing
 - add husky or github action to run linting on commit or push

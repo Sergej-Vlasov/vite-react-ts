@@ -109,8 +109,7 @@ function App() {
           value={searchQuery}
           error={inputError}
           helperText={inputError ? 'Enter at least 3 characters' : ''}
-          disabled={loading}
-          onChange={handleInputChange}
+          onChange={loading ? undefined : handleInputChange}
         />
       </Box>
       {error ? (

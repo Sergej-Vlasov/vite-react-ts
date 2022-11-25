@@ -48,7 +48,6 @@ function App() {
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (loading) return;
       setSearchQuery(e.target.value);
 
       // validation of value
@@ -69,7 +68,7 @@ function App() {
       // fetch the new data with debounce function
       debouncedFetch(e.target.value);
     },
-    [debouncedFetch, inputError, loading]
+    [debouncedFetch, inputError]
   );
 
   useEffect(() => {
@@ -110,7 +109,7 @@ function App() {
           value={searchQuery}
           error={inputError}
           helperText={inputError ? 'Enter at least 3 characters' : ''}
-          onChange={handleInputChange}
+          onChange={loading ? undefined : handleInputChange}
         />
       </Box>
       {error ? (

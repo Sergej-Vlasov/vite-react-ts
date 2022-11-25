@@ -33,12 +33,19 @@ describe('App', () => {
     expect(screen.getByRole('textbox')).toHaveValue('react');
   });
 
-  it('changed input value', () => {
+  it('changed input value', async () => {
     setup();
-    const input = screen.getByRole('textbox');
-    expect(input).toHaveValue('react');
-    fireEvent.change(input, { target: { value: 'angular' } });
-    expect(input).toHaveValue('angular');
+    await waitFor(
+      () => {
+        const input = screen.getByRole('textbox');
+        expect(input).toHaveValue('react');
+        fireEvent.change(input, { target: { value: 'angular' } });
+        expect(input).toHaveValue('angular');
+      },
+      {
+        timeout: 2000,
+      }
+    );
   });
 
   it('renders error in the input', () => {
@@ -56,18 +63,11 @@ describe('App', () => {
     expect(screen.getByRole('table')).toBeInTheDocument();
   });
 
-  it('renders table body after initial request', async () => {
+  it('renders table body after initial request', () => {
     setup();
 
-    await waitFor(
-      () => {
-        const items = screen.getAllByRole('rowgroup');
-        expect(items).toHaveLength(2);
-        expect(items[1].children.length).toBe(25);
-      },
-      {
-        timeout: 3000,
-      }
-    );
+    const items = screen.getAllByRole('rowgroup');
+    expect(items).toHaveLength(2);
+    expect(items[1].children.length).toBe(25);
   });
 });

@@ -1,24 +1,10 @@
 import { useLazyQuery } from '@apollo/client';
-import {
-  Alert,
-  Box,
-  Container,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Container, TextField, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash-es';
 import { getRepositories } from './graphql';
 import { IGetRepositoriesQuery } from './types';
-import { CodeForkSvg, StargazerSvg } from './assets';
-import { EmptyPlaceholder, GithubReposTable, LoadingPlaceholder } from './components';
+import { GithubReposTable } from './components';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('react');

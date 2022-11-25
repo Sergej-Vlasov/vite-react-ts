@@ -16,3 +16,10 @@ export interface IRepository {
   stargazerCount: number;
   forkCount: number;
 }
+
+interface ISearchResult extends IQueryNodes<IRepository> {
+  pageInfo: IPageInfo;
+}
+export interface IGetRepositoriesQuery {
+  search: ISearchResult;
+}

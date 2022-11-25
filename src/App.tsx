@@ -1,31 +1,10 @@
 import { useLazyQuery } from '@apollo/client';
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Container,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Container, TextField, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash-es';
 import { getRepositories } from './graphql';
-import { IPageInfo, IQueryNodes, IRepository } from './types';
-import { CodeForkSvg, StargazerSvg } from './assets';
-
-interface ISearchResult extends IQueryNodes<IRepository> {
-  pageInfo: IPageInfo;
-}
-interface IGetRepositoriesQuery {
-  search: ISearchResult;
-}
+import { IGetRepositoriesQuery } from './types';
+import { GithubReposTable } from './components';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('react');
@@ -117,91 +96,7 @@ function App() {
           Something went wrong
         </Alert>
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Repository Name</TableCell>
-                <TableCell align="right">
-                  <StargazerSvg />{' '}
-                  <Typography sx={{ display: 'inline' }}>Stars</Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <CodeForkSvg />{' '}
-                  <Typography sx={{ display: 'inline' }}>Forks</Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {/* render data only when its not empty */}
-              {data?.search.nodes.length
-                ? data.search.nodes.map(
-                    ({ id, nameWithOwner, url, stargazerCount, forkCount }) => (
-                      <TableRow
-                        key={id}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        <TableCell component="th" scope="row">
-                          <Typography
-                            component="a"
-                            href={url}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            sx={{
-                              textDecoration: 'none',
-                              color: 'text.primary',
-                              '&:hover': { textDecoration: 'underline' },
-                            }}
-                          >
-                            {nameWithOwner}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <StargazerSvg />{' '}
-                          <Typography sx={{ display: 'inline' }}>
-                            {stargazerCount}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <CodeForkSvg />{' '}
-                          <Typography sx={{ display: 'inline' }}>{forkCount}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  )
-                : null}
-            </TableBody>
-          </Table>
-          {/* loading placeholder */}
-          {loading ? (
-            <Box
-              sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}
-            >
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ marginRight: '0.5rem' }}
-              >
-                Fetching data...
-              </Typography>
-              <CircularProgress size="1.5rem" />
-            </Box>
-          ) : null}
-          {/* if search result is empty inform the user with a message */}
-          {!loading && !data?.search.nodes.length ? (
-            <Box
-              sx={{ display: 'flex', justifyContent: 'center', paddingBlock: '0.5rem' }}
-            >
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                sx={{ marginRight: '0.5rem' }}
-              >
-                Table is empty
-              </Typography>
-            </Box>
-          ) : null}
-        </TableContainer>
+        <GithubReposTable loading={loading} data={data} />
       )}
     </Container>
   );
